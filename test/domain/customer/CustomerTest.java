@@ -57,15 +57,13 @@ class CustomerTest {
     @Test
     public void ConfirmEmailAddress() {
         // Given CustomerRegistered
-        Customer customer = Customer.reconstitute(
-                List.of(
-                        CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
-                )
+        List<Event> eventStream = List.of(
+                CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
         );
 
         // When ConfirmCustomerEmailAddress
         ConfirmCustomerEmailAddress command = ConfirmCustomerEmailAddress.build(customerID.value, confirmationHash.value);
-        List<Event> recordedEvents = customer.confirmEmailAddress(command);
+        List<Event> recordedEvents = Customer.confirmEmailAddress(eventStream, command);
 
         // Then CustomerEmailAddressConfirmed
         assertEquals(1, recordedEvents.size());
@@ -80,15 +78,13 @@ class CustomerTest {
     @Test
     public void ConfirmEmailAddress_withWrongConfirmationHash() {
         // Given CustomerRegistered
-        Customer customer = Customer.reconstitute(
-                List.of(
-                        CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
-                )
+        List<Event> eventStream = List.of(
+                CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
         );
 
         // When ConfirmCustomerEmailAddress (with wrong confirmationHash)
         ConfirmCustomerEmailAddress command = ConfirmCustomerEmailAddress.build(customerID.value, wrongConfirmationHash.value);
-        List<Event> recordedEvents = customer.confirmEmailAddress(command);
+        List<Event> recordedEvents = Customer.confirmEmailAddress(eventStream, command);
 
         // Then CustomerEmailAddressConfirmationFailed
         assertEquals(1, recordedEvents.size());
@@ -104,16 +100,14 @@ class CustomerTest {
     public void ConfirmEmailAddress_whenItWasAlreadyConfirmed() {
         // Given CustomerRegistered
         //   and CustomerEmailAddressConfirmed
-        Customer customer = Customer.reconstitute(
-                List.of(
-                        CustomerRegistered.build(customerID, emailAddress, confirmationHash, name),
-                        CustomerEmailAddressConfirmed.build(customerID)
-                )
+        List<Event> eventStream = List.of(
+                CustomerRegistered.build(customerID, emailAddress, confirmationHash, name),
+                CustomerEmailAddressConfirmed.build(customerID)
         );
 
         // When ConfirmCustomerEmailAddress
         ConfirmCustomerEmailAddress command = ConfirmCustomerEmailAddress.build(customerID.value, confirmationHash.value);
-        List<Event> recordedEvents = customer.confirmEmailAddress(command);
+        List<Event> recordedEvents = Customer.confirmEmailAddress(eventStream, command);
 
         // Then no event
         assertEquals(0, recordedEvents.size());
@@ -123,16 +117,14 @@ class CustomerTest {
     public void ConfirmEmailAddress_withWrongConfirmationHash_whenItWasAlreadyConfirmed() {
         // Given CustomerRegistered
         //   and CustomerEmailAddressConfirmed
-        Customer customer = Customer.reconstitute(
-                List.of(
-                        CustomerRegistered.build(customerID, emailAddress, confirmationHash, name),
-                        CustomerEmailAddressConfirmed.build(customerID)
-                )
+        List<Event> eventStream = List.of(
+                CustomerRegistered.build(customerID, emailAddress, confirmationHash, name),
+                CustomerEmailAddressConfirmed.build(customerID)
         );
 
         // When ConfirmCustomerEmailAddress (with wrong confirmationHash)
         ConfirmCustomerEmailAddress command = ConfirmCustomerEmailAddress.build(customerID.value, wrongConfirmationHash.value);
-        List<Event> recordedEvents = customer.confirmEmailAddress(command);
+        List<Event> recordedEvents = Customer.confirmEmailAddress(eventStream, command);
 
         // Then CustomerEmailAddressConfirmationFailed
         assertEquals(1, recordedEvents.size());
@@ -147,15 +139,13 @@ class CustomerTest {
     @Test
     public void ChangeCustomerEmailAddress() {
         // Given CustomerRegistered
-        Customer customer = Customer.reconstitute(
-                List.of(
-                        CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
-                )
+        List<Event> eventStream = List.of(
+                CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
         );
 
         // When ChangeCustomerEmailAddress
         ChangeCustomerEmailAddress command = ChangeCustomerEmailAddress.build(customerID.value, changedEmailAddress.value);
-        List<Event> recordedEvents = customer.changeEmailAddress(command);
+        List<Event> recordedEvents = Customer.changeEmailAddress(eventStream, command);
 
         // Then CustomerEmailAddressChanged
         assertEquals(1, recordedEvents.size());
@@ -172,15 +162,13 @@ class CustomerTest {
     @Test
     public void ChangeCustomerEmailAddress_withUnchangedEmailAddress() {
         // Given CustomerRegistered
-        Customer customer = Customer.reconstitute(
-                List.of(
-                        CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
-                )
+        List<Event> eventStream = List.of(
+                CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
         );
 
         // When ChangeCustomerEmailAddress
         ChangeCustomerEmailAddress command = ChangeCustomerEmailAddress.build(customerID.value, emailAddress.value);
-        List<Event> recordedEvents = customer.changeEmailAddress(command);
+        List<Event> recordedEvents = Customer.changeEmailAddress(eventStream, command);
 
         // Then no event
         assertEquals(0, recordedEvents.size());
@@ -190,16 +178,14 @@ class CustomerTest {
     public void ChangeCustomerEmailAddress_whenItWasAlreadyChanged() {
         // Given CustomerRegistered
         //   and CustomerEmailAddressChanged
-        Customer customer = Customer.reconstitute(
-                List.of(
-                        CustomerRegistered.build(customerID, emailAddress, confirmationHash, name),
-                        CustomerEmailAddressChanged.build(customerID, changedEmailAddress, changedConfirmationHash)
-                )
+        List<Event> eventStream = List.of(
+                CustomerRegistered.build(customerID, emailAddress, confirmationHash, name),
+                CustomerEmailAddressChanged.build(customerID, changedEmailAddress, changedConfirmationHash)
         );
 
         // When ChangeCustomerEmailAddress
         ChangeCustomerEmailAddress command = ChangeCustomerEmailAddress.build(customerID.value, changedEmailAddress.value);
-        List<Event> recordedEvents = customer.changeEmailAddress(command);
+        List<Event> recordedEvents = Customer.changeEmailAddress(eventStream, command);
 
         // Then no event
         assertEquals(0, recordedEvents.size());
@@ -210,17 +196,15 @@ class CustomerTest {
         // Given CustomerRegistered
         //   and CustomerEmailAddressConfirmed
         //   and CustomerEmailAddressChanged
-        Customer customer = Customer.reconstitute(
-                List.of(
-                        CustomerRegistered.build(customerID, emailAddress, confirmationHash, name),
-                        CustomerEmailAddressConfirmed.build(customerID),
-                        CustomerEmailAddressChanged.build(customerID, changedEmailAddress, changedConfirmationHash)
-                )
+        List<Event> eventStream = List.of(
+                CustomerRegistered.build(customerID, emailAddress, confirmationHash, name),
+                CustomerEmailAddressConfirmed.build(customerID),
+                CustomerEmailAddressChanged.build(customerID, changedEmailAddress, changedConfirmationHash)
         );
 
         // When ConfirmCustomerEmailAddress
         ConfirmCustomerEmailAddress command = ConfirmCustomerEmailAddress.build(customerID.value, changedConfirmationHash.value);
-        List<Event> recordedEvents = customer.confirmEmailAddress(command);
+        List<Event> recordedEvents = Customer.confirmEmailAddress(eventStream, command);
 
         // Then CustomerEmailAddressConfirmed
         assertEquals(1, recordedEvents.size());
@@ -235,15 +219,13 @@ class CustomerTest {
     @Test
     public void ChangeCustomerName() {
         // Given CustomerRegistered
-        Customer customer = Customer.reconstitute(
-                List.of(
-                        CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
-                )
+        List<Event> eventStream = List.of(
+                CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
         );
 
         // When ChangeCustomerName
         ChangeCustomerName command = ChangeCustomerName.build(customerID, changedName);
-        List<Event> recordedEvents = customer.changeName(command);
+        List<Event> recordedEvents = Customer.changeName(eventStream, command);
 
         // Then CustomerNameChanged
         assertEquals(1, recordedEvents.size());
@@ -259,15 +241,13 @@ class CustomerTest {
     @Test
     public void ChangeCustomerName_withUnchangedName() {
         // Given CustomerRegistered
-        Customer customer = Customer.reconstitute(
-                List.of(
-                        CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
-                )
+        List<Event> eventStream = List.of(
+                CustomerRegistered.build(customerID, emailAddress, confirmationHash, name)
         );
 
         // When ChangeCustomerName
         ChangeCustomerName command = ChangeCustomerName.build(customerID, name);
-        List<Event> recordedEvents = customer.changeName(command);
+        List<Event> recordedEvents = Customer.changeName(eventStream, command);
 
         // Then no event
         assertEquals(0, recordedEvents.size());
@@ -277,16 +257,14 @@ class CustomerTest {
     public void ChangeCustomerName_whenItWasAlreadyChanged() {
         // Given CustomerRegistered
         //   and CustomerNameChanged
-        Customer customer = Customer.reconstitute(
-                List.of(
-                        CustomerRegistered.build(customerID, emailAddress, confirmationHash, name),
-                        CustomerNameChanged.build(customerID, changedName)
-                )
+        List<Event> eventStream = List.of(
+                CustomerRegistered.build(customerID, emailAddress, confirmationHash, name),
+                CustomerNameChanged.build(customerID, changedName)
         );
 
         // When ChangeCustomerName
         ChangeCustomerName command = ChangeCustomerName.build(customerID, changedName);
-        List<Event> recordedEvents = customer.changeName(command);
+        List<Event> recordedEvents = Customer.changeName(eventStream, command);
 
         // Then no event
         assertEquals(0, recordedEvents.size());
